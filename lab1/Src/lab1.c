@@ -1,5 +1,6 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
+#include "assert.h"
 
 void SystemClock_Config(void);
 
@@ -17,6 +18,16 @@ int main(void)
   with hardware register access  */
 
   __HAL_RCC_GPIOC_CLK_ENABLE();
+
+  GPIOC->MODER |= (1 << 18) | (1 << 16);
+  assert(GPIOC->MODER == 0x50000 );
+
+  GPIOC->OTYPER &= ~((1<<9) | (1<<8));
+  assert(GPIOC->OTYPER == 0x0000);
+
+  
+
+
 
   GPIO_InitTypeDef initStr = {GPIO_PIN_8 | GPIO_PIN_9,
                               GPIO_MODE_OUTPUT_PP,
