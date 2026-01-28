@@ -25,7 +25,8 @@ int main(void)
   GPIOC->OTYPER &= ~((1<<9) | (1<<8));
   assert(GPIOC->OTYPER == 0x0000);
 
-  
+  GPIOC->OSPEEDR &= ~((1<<18) | (1<<16));
+  assert(GPIOC->OSPEEDR == 0x00050000);
 
 
 
