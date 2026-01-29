@@ -17,7 +17,8 @@ int main(void)
   the GPIOC peripheral. You'll be redoing this code
   with hardware register access  */
 
-  __HAL_RCC_GPIOC_CLK_ENABLE();
+  HAL_RCC_GPIOC_CLK_Enable();
+  // __HAL_RCC_GPIOC_CLK_ENABLE();
 
   GPIOC->MODER |= (1 << 18) | (1 << 16);
   assert(GPIOC->MODER == 0x50000 );
@@ -49,6 +50,7 @@ int main(void)
     //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
   }
 }
+
 
 /**
   * @brief System Clock Configuration
