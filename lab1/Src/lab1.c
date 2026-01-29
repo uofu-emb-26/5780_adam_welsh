@@ -26,19 +26,27 @@ int main(void)
   assert(GPIOC->OTYPER == 0x0000);
 
   GPIOC->OSPEEDR &= ~((1<<18) | (1<<16));
-  assert(GPIOC->OSPEEDR == 0x00050000);
+  assert((GPIOC->OSPEEDR & 0x00050000) == 0x0);
+
+  GPIOC->PUPDR &= ~((1<<19) | (1<<18) | (1<<17) | (1<<16));
+  assert((GPIOC->PUPDR & 0x000f0000 )== 0x00000000);
 
 
 
-  GPIO_InitTypeDef initStr = {GPIO_PIN_8 | GPIO_PIN_9,
-                              GPIO_MODE_OUTPUT_PP,
-                              GPIO_SPEED_FREQ_LOW,
-                              GPIO_NOPULL};
-  HAL_GPIO_Init(GPIOC, &initStr);
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+  // GPIO_InitTypeDef initStr = {GPIO_PIN_8 | GPIO_PIN_9,
+  //                            GPIO_MODE_OUTPUT_PP,
+  //                            GPIO_SPEED_FREQ_LOW,
+  //                            GPIO_NOPULL};
+  // HAL_GPIO_Init(GPIOC, &initStr);
+  // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+
+  GPIOC->ODR |= (1<<8);
+  assert((GPIOC->ODR & 0x0100 )== 0x100);
+
   while (1) {
     HAL_Delay(200);
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
+    GPIOC->ODR ^=(1<<9) | (1<<8);
+    //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
   }
 }
 
