@@ -1,7 +1,7 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-#define HAL_RCC_GPIOC_CLK_Enable
+void HAL_RCC_GPIOC_CLK_Enable(void);
 
 #ifdef __cplusplus
 extern "C" {

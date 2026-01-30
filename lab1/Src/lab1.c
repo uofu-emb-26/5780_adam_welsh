@@ -1,6 +1,7 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
 #include "assert.h"
+#include "hal_gpio.h"
 
 void SystemClock_Config(void);
 
@@ -18,37 +19,85 @@ int main(void)
   with hardware register access  */
 
   HAL_RCC_GPIOC_CLK_Enable();
-  // __HAL_RCC_GPIOC_CLK_ENABLE();
+  //__HAL_RCC_GPIOC_CLK_ENABLE();
 
-  GPIOC->MODER |= (1 << 18) | (1 << 16);
+
+
+  // GPIOC->MODER |= (1 << 18) | (1 << 16);
+  // assert(GPIOC->MODER == 0x50000 );
+
+  // GPIOC->OTYPER &= ~((1<<9) | (1<<8));
+  // assert(GPIOC->OTYPER == 0x0000);
+
+  // GPIOC->OSPEEDR &= ~((1<<18) | (1<<16));
+  // assert((GPIOC->OSPEEDR & 0x00050000) == 0x0);
+
+  // GPIOC->PUPDR &= ~((1<<19) | (1<<18) | (1<<17) | (1<<16));
+  // assert((GPIOC->PUPDR & 0x000f0000 )== 0x00000000);
+
+
+
+  //  GPIO_InitTypeDef initStr = {GPIO_PIN_8 | GPIO_PIN_9,
+  //                             GPIO_MODE_OUTPUT_PP,
+  //                             GPIO_SPEED_FREQ_LOW,
+  //                             GPIO_NOPULL};
+  //HAL_GPIO_Init(GPIOC, &initStr);
+  // // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+
+  // GPIOC->ODR |= (1<<8);
+  // assert((GPIOC->ODR & 0x0100 )== 0x100);
+
+  // GPIO_InitTypeDef my_LED_InitString = { GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_7 | GPIO_PIN_6,
+  //                                        GPIO_MODE_OUTPUT_PP, 
+  //                                        GPIO_NOPULL, 
+  //                                        GPIO_SPEED_FREQ_LOW,
+  //                                      };
+
+  GPIO_InitTypeDef GPIO_LED_InitStruct = {GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_7 | GPIO_PIN_6,
+                              GPIO_MODE_OUTPUT_PP,
+                             GPIO_SPEED_FREQ_LOW,
+                               GPIO_NOPULL};
+  // GPIO_InitTypeDef GPIO_PC6_InitStruct = {
+  //   .Pin = GPIO_PIN_6,
+  //   .Mode = GPIO_OUTPUT_PP,
+  //   .Pull = GPIO_NOPULL,
+  //   .Speed = GPIO_SPEED_FREQ_LOW,
+  //   .Alternate = NULL
+  // };
+  // GPIO_InitTypeDef GPIO_PC7_InitStruct = {
+  //   .Pin = GPIO_PIN_7,
+  //   .Mode = GPIO_OUTPUT_PP,
+  //   .Pull = GPIO_NOPULL,
+  //   .Speed = GPIO_SPEED_FREQ_LOW,
+  //   .Alternate = NULL
+  // };
+
+  My_HAL_GPIO_Init(GPIOC, &GPIO_LED_InitStruct);
+
+  //My_HAL_GPIO_Init(GPIOC, NULL);
   assert(GPIOC->MODER == 0x50000 );
 
-  GPIOC->OTYPER &= ~((1<<9) | (1<<8));
-  assert(GPIOC->OTYPER == 0x0000);
-
-  GPIOC->OSPEEDR &= ~((1<<18) | (1<<16));
-  assert((GPIOC->OSPEEDR & 0x00050000) == 0x0);
-
-  GPIOC->PUPDR &= ~((1<<19) | (1<<18) | (1<<17) | (1<<16));
-  assert((GPIOC->PUPDR & 0x000f0000 )== 0x00000000);
-
-
-
-  // GPIO_InitTypeDef initStr = {GPIO_PIN_8 | GPIO_PIN_9,
-  //                            GPIO_MODE_OUTPUT_PP,
-  //                            GPIO_SPEED_FREQ_LOW,
-  //                            GPIO_NOPULL};
+  //  GPIO_InitTypeDef initStr = {GPIO_PIN_8 | GPIO_PIN_9,
+  //                             GPIO_MODE_OUTPUT_PP,
+  //                             GPIO_SPEED_FREQ_LOW,
+  //                             GPIO_NOPULL};
   // HAL_GPIO_Init(GPIOC, &initStr);
-  // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
 
-  GPIOC->ODR |= (1<<8);
-  assert((GPIOC->ODR & 0x0100 )== 0x100);
+
+
+  My_HAL_GPIO_WritePin(GPIOC, 8, GPIO_PIN_SET);
 
   while (1) {
     HAL_Delay(200);
-    GPIOC->ODR ^=(1<<9) | (1<<8);
+    My_HAL_GPIO_TogglePin(GPIOC, 8);
+    My_HAL_GPIO_TogglePin(GPIOC, 9);
+    //GPIOC->ODR ^=(1<<9) | (1<<8);
     //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
   }
+}
+
+void HAL_RCC_GPIOC_CLK_Enable(void){
+    RCC->AHBENR |= 1<<19;
 }
 
 
