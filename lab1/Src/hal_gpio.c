@@ -91,21 +91,21 @@ GPIO_PinState My_HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 
 void My_HAL_GPIO_WritePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState)
 {
-    // if (PinState == GPIO_PIN_SET)
-    // {
-    //     GPIOx->ODR |= GPIO_Pin;
-    // }
-    // else{
-    //     GPIOx->ODR &= ~GPIO_Pin;
-    // }
-    GPIOx->ODR &= ~(1<<GPIO_Pin);
-    GPIOx->ODR |= (PinState << GPIO_Pin);
+    if (PinState == GPIO_PIN_SET)
+    {
+        GPIOx->ODR |= GPIO_Pin;
+    }
+    else{
+        GPIOx->ODR &= ~GPIO_Pin;
+    }
+    //GPIOx->ODR &= ~(1<<GPIO_Pin);
+    //GPIOx->ODR |= (PinState << GPIO_Pin);
 }
 
 
 
 void My_HAL_GPIO_TogglePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 {
-    GPIOx->ODR ^= (1<<GPIO_Pin);
+    GPIOx->ODR ^= GPIO_Pin;
 }
 

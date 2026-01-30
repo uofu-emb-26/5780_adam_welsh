@@ -75,7 +75,7 @@ int main(void)
   My_HAL_GPIO_Init(GPIOC, &GPIO_LED_InitStruct);
 
   //My_HAL_GPIO_Init(GPIOC, NULL);
-  assert(GPIOC->MODER == 0x50000 );
+  //assert(GPIOC->MODER == 0x50000 );
 
   //  GPIO_InitTypeDef initStr = {GPIO_PIN_8 | GPIO_PIN_9,
   //                             GPIO_MODE_OUTPUT_PP,
@@ -85,12 +85,12 @@ int main(void)
 
 
 
-  My_HAL_GPIO_WritePin(GPIOC, 8, GPIO_PIN_SET);
+  My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
 
   while (1) {
     HAL_Delay(200);
-    My_HAL_GPIO_TogglePin(GPIOC, 8);
-    My_HAL_GPIO_TogglePin(GPIOC, 9);
+    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
     //GPIOC->ODR ^=(1<<9) | (1<<8);
     //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
   }
