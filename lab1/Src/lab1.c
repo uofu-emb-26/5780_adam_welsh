@@ -29,18 +29,37 @@ int main(void)
                               GPIO_MODE_OUTPUT_PP,
                              GPIO_SPEED_FREQ_LOW,
                                GPIO_NOPULL};
+
+  GPIO_InitTypeDef GPIO_UserButton_init = {GPIO_PIN_0,
+                                            GPIO_MODE_INPUT,
+                                            GPIO_SPEED_FREQ_LOW,
+                                            GPIO_PULLDOWN};
   
  
 
   My_HAL_GPIO_Init(GPIOC, &GPIO_LED_InitStruct);
+  My_HAL_GPIO_Init(GPIOA, &GPIO_UserButton_init);
 
 
   My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
 
+  uint32_t debouncer = 0;
   while (1) {
-    HAL_Delay(200);
-    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
-    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
+    debouncer = (debouncer << 1);
+
+    if(My_HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
+      debouncer |= 0x01;
+    }
+    
+    // if(debouncer == 0xFFFFFFFF) {
+    //   HAL_Delay(200);
+    //   My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6 | GPIO_PIN_7);
+    // }
+
+    if(debouncer == 0x7FFFFFFF) {
+      My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6 | GPIO_PIN_7);
+    }
+    
   }
 }
 
