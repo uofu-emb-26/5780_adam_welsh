@@ -25,7 +25,6 @@ int main(void)
 
 
 
-
   GPIO_InitTypeDef GPIO_LED_InitStruct = {GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_7 | GPIO_PIN_6,
                               GPIO_MODE_OUTPUT_PP,
                              GPIO_SPEED_FREQ_LOW,
