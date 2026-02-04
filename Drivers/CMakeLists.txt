@@ -2,6 +2,17 @@ cmake_minimum_required(VERSION 3.22)
 # Enable CMake support for ASM and C languages
 enable_language(C ASM)
 
+
+# Interface library for includes and symbols
+add_library(STM32_HAL INTERFACE)
+target_include_directories(STM32_HAL INTERFACE
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F0xx_HAL_Driver/Inc
+#    ${CMAKE_SOURCE_DIR}/Drivers/STM32F0xx_HAL_Driver/Inc/Legacy
+    ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F0xx/Include
+    ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Include
+    ${CMAKE_SOURCE_DIR}/Core/Inc
+)
+
 # Interface library for includes and symbols
 add_library(STM32_Drivers OBJECT)
 target_include_directories(STM32_Drivers PUBLIC
@@ -47,6 +58,7 @@ target_sources(STM32_Drivers PRIVATE
 )
 
 target_link_libraries(STM32_Drivers PRIVATE ${TOOLCHAIN_LINK_LIBRARIES})
+target_link_libraries(STM32_Drivers PUBLIC STM32_HAL)
 
 # Validate that STM32CubeMX code is compatible with C standard
 if((CMAKE_C_STANDARD EQUAL 90) OR (CMAKE_C_STANDARD EQUAL 99))

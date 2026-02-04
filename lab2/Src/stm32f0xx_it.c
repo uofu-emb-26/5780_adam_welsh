@@ -1,10 +1,15 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
 #include "stm32f0xx_it.h"
+#include "hal_gpio.h"
 
 /******************************************************************************/
 /*           Cortex-M0 Processor Interruption and Exception Handlers          */
 /******************************************************************************/
+
+local static uint16_t systick_count;
+
+
 /**
   * @brief This function handles Non maskable interrupt.
   */
@@ -45,6 +50,12 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   HAL_IncTick();
+  systick_count ++;
+
+  if(systick_count == 250){
+    systick_count = 0;
+    My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+  }
 }
 
 /******************************************************************************/

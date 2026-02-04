@@ -34,6 +34,7 @@ add_subdirectory(Drivers)
 include(flash_stm32)
 
 # Add labs subprojects
+add_subdirectory(My_HAL)
 add_subdirectory(lab1)
 add_subdirectory(lab2)
 add_subdirectory(lab3)
