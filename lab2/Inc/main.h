@@ -9,6 +9,8 @@ void EXTI_PA0_Setup(void);
 
 void SYSCFG_Clk_Enable(void);
 
+void EXTI0_1_IRQHandler(void);
+
 void Error_Handler(void);
 
 #ifdef __cplusplus

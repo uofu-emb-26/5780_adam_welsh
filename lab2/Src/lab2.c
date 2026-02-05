@@ -45,7 +45,12 @@ int main(void)
 
   SYSCFG_Clk_Enable();
 
-  SYSCFG->EXTICR[0] = SYSCFG_EXTICR1_EXTI0_PA;
+  assert(SYSCFG->EXTICR[0] == 0x0000);
+  SYSCFG->EXTICR[0] &= ~(111<<0);
+  assert((SYSCFG->EXTICR[0] & 0x0000000f) == 0x0);
+
+  NVIC_EnableIRQ(EXTI0_1_IRQn);
+  NVIC_SetPriority(EXTI0_1_IRQn, 1);
 
   while (1)
   {
@@ -62,6 +67,17 @@ int main(void)
 void SYSCFG_Clk_Enable(void)
 {
   RCC->APB2ENR |= (1<<0);
+}
+
+void EXTI0_1_IRQHandler(void)
+{
+  My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
+  for(int i = 0; i < 1500000; i++){
+
+  }
+  My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
+
+  EXTI->PR |= (1<<0);
 }
 
 /**
