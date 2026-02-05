@@ -52,6 +52,8 @@ int main(void)
   NVIC_EnableIRQ(EXTI0_1_IRQn);
   NVIC_SetPriority(EXTI0_1_IRQn, 1);
 
+  NVIC_SetPriority(SysTick_IRQn, 2);
+
   while (1)
   {
     My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
