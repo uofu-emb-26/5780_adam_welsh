@@ -1,6 +1,7 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
 #include "hal_gpio.h"
+#include "assert.h"
 
 void SystemClock_Config(void);
 
@@ -24,7 +25,27 @@ int main(void)
 
   My_HAL_GPIO_Init(GPIOC, &initString);
 
+
+  GPIO_InitTypeDef buttonInit = {GPIO_PIN_0,
+                                  GPIO_MODE_INPUT,
+                                  GPIO_SPEED_FREQ_LOW,
+                                  GPIO_PULLDOWN};
+  My_HAL_GPIO_Init(GPIOA, &buttonInit);
+
+  
+
   My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET);
+
+
+  // configuring EXTI for PA0
+  assert(EXTI->IMR == 0X7f840000);
+
+  EXTI_PA0_Setup();
+  assert((EXTI->IMR & 0X1) == 0x1);
+
+  SYSCFG_Clk_Enable();
+
+  SYSCFG->EXTICR[0] = SYSCFG_EXTICR1_EXTI0_PA;
 
   while (1)
   {
@@ -36,6 +57,11 @@ int main(void)
   
 
   return -1;
+}
+
+void SYSCFG_Clk_Enable(void)
+{
+  RCC->APB2ENR |= (1<<0);
 }
 
 /**

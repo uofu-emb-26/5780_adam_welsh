@@ -7,7 +7,7 @@
 /*           Cortex-M0 Processor Interruption and Exception Handlers          */
 /******************************************************************************/
 
-local static uint16_t systick_count;
+volatile uint16_t systick_count;
 
 
 /**

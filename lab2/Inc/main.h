@@ -5,6 +5,10 @@
 extern "C" {
 #endif
 
+void EXTI_PA0_Setup(void);
+
+void SYSCFG_Clk_Enable(void);
+
 void Error_Handler(void);
 
 #ifdef __cplusplus

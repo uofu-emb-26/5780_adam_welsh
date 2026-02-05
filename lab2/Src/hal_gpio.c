@@ -112,3 +112,12 @@ void My_HAL_GPIO_TogglePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
     GPIOx->ODR ^= GPIO_Pin;
 }
 
+
+void EXTI_PA0_Setup(void)
+{
+    EXTI->IMR |= (1<<0);
+    EXTI->RTSR |= (1<<0);
+
+}
+
+
