@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 void Error_Handler(void);
+void tim2_tim3_clk_en(void);
 
 #ifdef __cplusplus
 }

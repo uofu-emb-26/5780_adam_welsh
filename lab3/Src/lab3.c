@@ -14,11 +14,55 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+  tim2_tim3_clk_en();
+
+  // TIM_Base_InitTypeDef timBaseString = {.Prescaler = 0x1F3F,
+  //                                   .CounterMode = TIM_COUNTERMODE_UP,
+  //                                   .Period = 0x00FA};
+
+  // TIM_HandleTypeDef timString = {.Instance = TIM2,
+  //                               .Init = timBaseString};
+                            
+  //TIM3->CR1 |= (1<<0);
+
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+
+  GPIO_InitTypeDef initString = {GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_7 | GPIO_PIN_6,
+                              GPIO_MODE_OUTPUT_PP,
+                             GPIO_SPEED_FREQ_LOW,
+                               GPIO_NOPULL};
+
+  My_HAL_GPIO_Init(GPIOC, &initString);
+
+
+  TIM2->PSC = 0x1F3F;
+  TIM2->ARR = 0x00FA;
+  TIM2->DIER |= (1<<0);
+  TIM2->CR1 |= (1<<O);
+
+
+  NVIC_EnableIRQ(TIM2_IRQn);
+  
+  My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET)
+
   while (1)
   {
  
   }
   return -1;
+}
+
+
+void TIM2_IRQHandler(void)
+{
+  My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
+  TIM->SR &= ~(1<<0);
+}
+
+
+void tim2_tim3_clk_en(void)
+{
+  RCC->APB1ENR |= (1<< 0) | (1<< 1);
 }
 
 /**
