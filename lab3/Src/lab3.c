@@ -1,5 +1,6 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
+#include "hal_gpio.h"
 
 void SystemClock_Config(void);
 
@@ -38,12 +39,12 @@ int main(void)
   TIM2->PSC = 0x1F3F;
   TIM2->ARR = 0x00FA;
   TIM2->DIER |= (1<<0);
-  TIM2->CR1 |= (1<<O);
+  TIM2->CR1 |= (1<<0);
 
 
   NVIC_EnableIRQ(TIM2_IRQn);
   
-  My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET)
+  My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
 
   while (1)
   {
@@ -56,7 +57,7 @@ int main(void)
 void TIM2_IRQHandler(void)
 {
   My_HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
-  TIM->SR &= ~(1<<0);
+  TIM2->SR &= ~(1<<0);
 }
 
 
@@ -64,6 +65,8 @@ void tim2_tim3_clk_en(void)
 {
   RCC->APB1ENR |= (1<< 0) | (1<< 1);
 }
+
+
 
 /**
   * @brief System Clock Configuration
