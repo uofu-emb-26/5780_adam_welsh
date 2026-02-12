@@ -1,6 +1,7 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
 #include "hal_gpio.h"
+#include "stdint.h"
 
 void SystemClock_Config(void);
 
@@ -15,7 +16,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-  tim2_tim3_clk_en();
+  tim2_clk_en();
 
   // TIM_Base_InitTypeDef timBaseString = {.Prescaler = 0x1F3F,
   //                                   .CounterMode = TIM_COUNTERMODE_UP,
@@ -33,7 +34,7 @@ int main(void)
                              GPIO_SPEED_FREQ_LOW,
                                GPIO_NOPULL};
 
-  My_HAL_GPIO_Init(GPIOC, &initString);
+  My_HAL_GPIO_Init(GPIOC, &initRegLedString);
 
   
 
@@ -48,9 +49,25 @@ int main(void)
   
   My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
 
+  tim3_pwm_setup(0x0014);
+  alt_pin_setup();
+
+  TIM3->CR1 |= (1<<0);
+
+
   while (1)
   {
- 
+    HAL_Delay(500);
+    tim3_pwm_setup(0x0010);
+    HAL_Delay(500);
+    tim3_pwm_setup(0x0008);
+    HAL_Delay(500);
+    tim3_pwm_setup(0x0001);
+    HAL_Delay(500);
+    tim3_pwm_setup(0x0014);
+    HAL_Delay(500);
+    tim3_pwm_setup(0x0032);
+
   }
   return -1;
 }
@@ -68,24 +85,28 @@ void tim2_clk_en(void)
   RCC->APB1ENR |= (1<< 0);
 }
 
-void tim3_pwm_setup(void)
+void tim3_pwm_setup(uint32_t duty_cycle)
 {
   RCC->APB1ENR |= (1<< 1);
-
-  TIM3->PSC = 0x03e7;
-  TIM3->ARR = 0x000A;
+  TIM3->PSC = 0x0063;
+  TIM3->ARR = 0x0064;
   TIM3->CCMR1 &= ~((1 << 9) | (1<<8));
   TIM3->CCMR1 &= ~((1<<0) | (1<<1));
   TIM3->CCMR1 &= ~(1<<12);
   TIM3->CCMR1 |= ((1<<14) | (1<<13));
-  TIM3->CCMR1 | = ((1<<3) | (1<<11));
+  TIM3->CCMR1 |= ((1<<4) | (1<<5) | (1<<6));
+  TIM3->CCMR1 |= ((1<<3) | (1<<11));
   TIM3->CCER |= (1<<0) | (1<<4);
-  TIM3->CCR1 = 0x0002;
-  TIM3->CCR2 = 0x0002;
+  TIM3->CCR1 = duty_cycle;
+  TIM3->CCR2 = duty_cycle;
 }
 
 void alt_pin_setup(void){
+  GPIOC->MODER &= ~((1<<14) | (1<<12));
+  GPIOC->MODER |= (1<<15) | (1<<13);
+  
 
+  GPIOC->AFR[0] &= ~((1<<31) | (1<<30) | (1<<29) | (1<<28) | (1<<27) | (1<<26) | (1<<25)| (1<<24));
 }
 
 /**
