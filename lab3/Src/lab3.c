@@ -28,12 +28,14 @@ int main(void)
 
   __HAL_RCC_GPIOC_CLK_ENABLE();
 
-  GPIO_InitTypeDef initString = {GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_7 | GPIO_PIN_6,
+  GPIO_InitTypeDef initRegLedString = {GPIO_PIN_8 | GPIO_PIN_9,
                               GPIO_MODE_OUTPUT_PP,
                              GPIO_SPEED_FREQ_LOW,
                                GPIO_NOPULL};
 
   My_HAL_GPIO_Init(GPIOC, &initString);
+
+  
 
 
   TIM2->PSC = 0x1F3F;
@@ -61,12 +63,30 @@ void TIM2_IRQHandler(void)
 }
 
 
-void tim2_tim3_clk_en(void)
+void tim2_clk_en(void)
 {
-  RCC->APB1ENR |= (1<< 0) | (1<< 1);
+  RCC->APB1ENR |= (1<< 0);
 }
 
+void tim3_pwm_setup(void)
+{
+  RCC->APB1ENR |= (1<< 1);
 
+  TIM3->PSC = 0x03e7;
+  TIM3->ARR = 0x000A;
+  TIM3->CCMR1 &= ~((1 << 9) | (1<<8));
+  TIM3->CCMR1 &= ~((1<<0) | (1<<1));
+  TIM3->CCMR1 &= ~(1<<12);
+  TIM3->CCMR1 |= ((1<<14) | (1<<13));
+  TIM3->CCMR1 | = ((1<<3) | (1<<11));
+  TIM3->CCER |= (1<<0) | (1<<4);
+  TIM3->CCR1 = 0x0002;
+  TIM3->CCR2 = 0x0002;
+}
+
+void alt_pin_setup(void){
+
+}
 
 /**
   * @brief System Clock Configuration
