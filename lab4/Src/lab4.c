@@ -1,11 +1,12 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
 #include "hal_gpio.h"
+#include "stdint.h"
 
 void SystemClock_Config(void);
 
 
-volatile char receivedByte;
+volatile char receivedData;
 volatile char data_flag;
 
 /**
@@ -56,44 +57,36 @@ int main(void)
 
   NVIC_EnableIRQ(USART3_4_IRQn);
 
-  NVIC_setPriority(USART3_4_IRQn, 1);
-
-  char read_val;
+  NVIC_SetPriority(USART3_4_IRQn, 1);
 
   while (1)
   {
-    while(!(USART3->ISR &= (1<<5))){
-    }
+    // while(!(USART3->ISR &= (1<<5))){
+    // }
 
-
-
-    read_val = USART3->RDR;
-
-    switch (read_val){
+    if(data_flag == 1){
+      switch (receivedData){
       case 'r':
-        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
-        transmit_str("r received\r\n");
-
+        LED_SRT_Hanlder(GPIO_PIN_6);
         break;
       case 'g':
-        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_9);
-        transmit_str("g received\r\n");
-
+        LED_SRT_Hanlder(GPIO_PIN_9);
         break;
       case 'b':
-        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
-        transmit_str("b received\r\n");
-
+        LED_SRT_Hanlder(GPIO_PIN_7);
         break;
       case 'o':
-        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
-        transmit_str("o received\r\n");
-
+        LED_SRT_Hanlder(GPIO_PIN_8);
         break;
       default:
         transmit_str("Error: Input char doesn't match supported cases\r\n");
         break;
+      }
+
+      data_flag = 0;
     }
+
+    
     
 
   }
@@ -101,8 +94,29 @@ int main(void)
   return -1;
 }
 
+
+void LED_SRT_Hanlder(uint16_t GPIO_Pin){
+  while(data_flag != 1){
+  }
+
+  if(receivedData == '0'){
+      HAL_GPIO_WritePin(GPIOC, GPIO_Pin, GPIO_PIN_RESET);
+      transmit_str("Reset pin\r\n");
+      }
+    else if(receivedData == '1'){
+      HAL_GPIO_WritePin(GPIOC, GPIO_Pin, GPIO_PIN_SET);
+      transmit_str("Set pin\r\n");
+      }
+    else if(receivedData == '2'){
+      HAL_GPIO_TogglePin(GPIOC, GPIO_Pin);
+      transmit_str("Toggled pin\r\n");
+      }
+    else
+      transmit_str("Error: cmd must give valid number\r\n");
+}
+
 void USART3_4_IRQHandler(void){
-  receivedByte = USART3->RDR;
+  receivedData = USART3->RDR;
   data_flag = 1;
 }
 
