@@ -4,6 +4,10 @@
 
 void SystemClock_Config(void);
 
+
+volatile char receivedByte;
+volatile char data_flag;
+
 /**
   * @brief  The application entry point.
   * @retval int
@@ -17,6 +21,17 @@ int main(void)
 
   // usart3 clk enable
   RCC->APB1ENR |= (1<<18);
+
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+
+
+ // setting up debugging led's
+  GPIO_InitTypeDef initString = {GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_7 | GPIO_PIN_6,
+                              GPIO_MODE_OUTPUT_PP,
+                             GPIO_SPEED_FREQ_LOW,
+                               GPIO_NOPULL};
+
+  HAL_GPIO_Init(GPIOC, &initString);
 
 
   // setting up alternate pins
@@ -37,15 +52,58 @@ int main(void)
   USART3->CR1 |= (1<<3) | (1<<2);
 
   USART3->CR1 |= (1<<0);
+  USART3->CR1 |= (1<<5);
 
-  char* string = "abc";
+  NVIC_EnableIRQ(USART3_4_IRQn);
+
+  NVIC_setPriority(USART3_4_IRQn, 1);
+
+  char read_val;
 
   while (1)
   {
-    transmit_str(string);
- 
+    while(!(USART3->ISR &= (1<<5))){
+    }
+
+
+
+    read_val = USART3->RDR;
+
+    switch (read_val){
+      case 'r':
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
+        transmit_str("r received\r\n");
+
+        break;
+      case 'g':
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_9);
+        transmit_str("g received\r\n");
+
+        break;
+      case 'b':
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+        transmit_str("b received\r\n");
+
+        break;
+      case 'o':
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
+        transmit_str("o received\r\n");
+
+        break;
+      default:
+        transmit_str("Error: Input char doesn't match supported cases\r\n");
+        break;
+    }
+    
+
   }
+
   return -1;
+}
+
+void USART3_4_IRQHandler(void){
+  receivedByte = USART3->RDR;
+  data_flag = 1;
 }
 
 
@@ -61,7 +119,8 @@ void alt_pin_setup(void){
 
 void transmit_char(char c){
   while(1){
-    if((USART3->ISR &= (1<<7)) == 1){
+    if((USART3->ISR &= (1<<7))){
+     // My_HAL_
       break; // wait for transmit request
     }
   }
