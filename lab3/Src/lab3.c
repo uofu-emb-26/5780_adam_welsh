@@ -68,14 +68,14 @@ int main(void)
     // HAL_Delay(500);
     // tim3_pwm_setup(0x0032);
 
-    for(int i = 0; i < 100; i++){
-      tim3_pwm_setup(i);
-      HAL_Delay(15);
-    }
-    for(int i = 100; i > 0; i--){
-      tim3_pwm_setup(i);
-      HAL_Delay(15);
-    }
+    // for(int i = 0; i < 100; i++){
+    //   tim3_pwm_setup(i);
+    //   HAL_Delay(25);
+    // }
+    // for(int i = 100; i > 0; i--){
+    //   tim3_pwm_setup(i);
+    //   HAL_Delay(25);
+    // }
 
     
 
@@ -110,7 +110,7 @@ void tim3_pwm_setup(uint32_t duty_cycle)
   TIM3->CCMR1 |= ((1<<4) | (1<<5) | (1<<6));
   TIM3->CCMR1 |= ((1<<3) | (1<<11));
   TIM3->CCER |= (1<<0) | (1<<4);
-  TIM3->CCR1 = duty_cycle;
+  TIM3->CCR1 = 100 - duty_cycle;
   TIM3->CCR2 = duty_cycle;
 }
 

@@ -15,11 +15,66 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+  // usart3 clk enable
+  RCC->APB1ENR |= (1<<18);
+
+
+  // setting up alternate pins
+  alt_pin_setup();
+
+  // setting baud rate
+  uint32_t sys_clk_freq;
+  uint16_t baud_reg_val;
+
+  sys_clk_freq = HAL_RCC_GetHCLKFreq();
+  baud_reg_val = sys_clk_freq / 115200;
+
+  USART3->BRR = baud_reg_val;
+
+
+
+  // enabling transmit and receive
+  USART3->CR1 |= (1<<3) | (1<<2);
+
+  USART3->CR1 |= (1<<0);
+
+  char* string = "abc";
+
   while (1)
   {
+    transmit_str(string);
  
   }
   return -1;
+}
+
+
+void alt_pin_setup(void){
+  // setting alternate mode to pins 4 and 5
+  GPIOC->MODER &= ~((1<<10) | (1<<8));
+  GPIOC->MODER |= (1<<11) | (1<<9);
+  // setting af1 into pins 4 and 5
+  GPIOC->AFR[0] &= ~((1<<23) | (1<<22) | (1<<21) | (1<<19) | (1<<18) | (1<<17) );
+  GPIOC->AFR[0] |= ((1<<20) | (1<<16));
+}
+
+
+void transmit_char(char c){
+  while(1){
+    if((USART3->ISR &= (1<<7)) == 1){
+      break; // wait for transmit request
+    }
+  }
+  USART3->TDR = c;
+  return;
+}
+
+void transmit_str(char* s){
+    while(*s != '\0'){
+      transmit_char(*s);
+      s++;
+    }
+    return;
 }
 
 /**
