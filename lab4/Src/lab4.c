@@ -67,15 +67,20 @@ int main(void)
     if(data_flag == 1){
       switch (receivedData){
       case 'r':
+        data_flag = 0;
+        transmit_str("What is your cmd?");
         LED_SRT_Hanlder(GPIO_PIN_6);
         break;
       case 'g':
+        data_flag = 0;
         LED_SRT_Hanlder(GPIO_PIN_9);
         break;
       case 'b':
+        data_flag = 0;
         LED_SRT_Hanlder(GPIO_PIN_7);
         break;
       case 'o':
+        data_flag = 0;
         LED_SRT_Hanlder(GPIO_PIN_8);
         break;
       default:
