@@ -4,6 +4,7 @@
 
 void SystemClock_Config(void);
 void I2C_Init(void);
+void alt_pin_setup(void);
 
 /**
   * @brief  The application entry point.
@@ -16,6 +17,20 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+  // setting up gpiob and c clock
+  RCC->AHBENR |= (1<<18) | (1<<19);
+
+  alt_pin_setup();
+
+  // set up clock
+  RCC->APB1ENR |= (1<<21);
+
+  I2C_Init();
+
+  //enable i2c peripheral
+  I2C2->CR1 |= (1<<0);
+
+
   while (1)
   {
  
@@ -23,8 +38,29 @@ int main(void)
   return -1;
 }
 
+void pin_setup(void){
+  GPIO_InitTypeDef pin_string_set = { GPIO_PIN_11 | GPIO_PIN_13, GPIO_MODE_AF_OD};
+  My_HAL_GPIO_Init(GPIOB, &pin_string_set);
+
+  // setting pin 11 as af1 and pin 13 as af5
+  GPIOB->AFR[1] &= ~((1<<15) | (1<<14) | (1<<13) | (1<<23) | (1<<21));
+  GPIOB->AFR[1] |= (1<<12) | (1<<22) | (1<<20);
+
+  //initializing pb14 and pc0
+  GPIO_InitTypeDef pc0_init = {GPIO_PIN_0, GPIO_MODE_OUTPUT_PP};
+  GPIO_InitTypeDef pb14_init = {GPIO_PIN_14, GPIO_MODE_OUTPUT_PP};
+  My_HAL_GPIO_Init(GPIOB, &pb14_init);
+  My_HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
+  My_HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0, GPIO_PIN_SET);
+}
+
 void I2C_Init(void){
-  
+  // setting timing reg
+  I2C1->TIMINGR |= (0x1<<28);
+  I2C1->TIMINGR |= 0x13;
+  I2C1->TIMINGR |= (0xf)<<8;
+  I2C1->TIMINGR |= (0x2)<<16;
+  I2C1->TIMINGR |= (0x4)<<20;
 }
 
 /**
