@@ -1,7 +1,9 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
+#include "hal_gpio.h"
 
 void SystemClock_Config(void);
+void I2C_Init(void);
 
 /**
   * @brief  The application entry point.
@@ -19,6 +21,10 @@ int main(void)
  
   }
   return -1;
+}
+
+void I2C_Init(void){
+  
 }
 
 /**
