@@ -8,7 +8,6 @@
 #define RESTART 1
 #define NO_RESTART 0
 
-
 #define THRESHOLD 500
 
 void SystemClock_Config(void);
