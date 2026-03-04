@@ -14,6 +14,8 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+  // beginning lab 6
+
   while (1)
   {
  
