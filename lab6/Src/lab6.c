@@ -4,6 +4,12 @@
 void SystemClock_Config(void);
 
 void config_start_ADC(void);
+void config_DAC(void);
+
+// Sine Wave: 8-bit, 32 samples/cycle
+const uint8_t sine_table[32] = {127,151,175,197,216,232,244,251,254,251,244,
+232,216,197,175,151,127,102,78,56,37,21,9,2,0,2,9,21,37,56,78,102};
+
 
 
 /**
@@ -35,6 +41,14 @@ int main(void)
   // enabling adc clk
   RCC->APB2ENR |= (1<<9);
 
+  // enabling dac clk
+  RCC->APB1ENR |= (1<<29);
+
+  // initializing dac pin to addl fn
+  GPIOA->MODER |= (0x3<<8);
+
+  config_DAC(); // PA4 DAC_out1
+
   // ADC config + start
 
   //HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
@@ -52,29 +66,29 @@ int main(void)
   while (1)
   {
 
-    read_val = ADC1->DR;
+    // read_val = ADC1->DR;
 
-    if(read_val > thresh4){
-      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET);
-    }
-    else if(read_val > thresh3){
-      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
-    }
-    else if(read_val > thresh2){
-      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+    // if(read_val > thresh4){
+    //   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET);
+    // }
+    // else if(read_val > thresh3){
+    //   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET);
+    //   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+    // }
+    // else if(read_val > thresh2){
+    //   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
+    //   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
 
-    }
-    else if(read_val > thresh1){
-      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
-    }
-    else{
-      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
-    }
+    // }
+    // else if(read_val > thresh1){
+    //   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+    //   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
+    // }
+    // else{
+    //   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
+    // }
 
-    HAL_Delay(100);
+    // HAL_Delay(100);
   }
   return -1;
 }
@@ -113,6 +127,16 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 }
+
+void config_DAC(void){
+  // PA4 dac_out1
+
+  // set trigger source for channel/output update
+  DAC1->CR |= (0x7<<3);
+  DAC1->CR |= (1<<0);
+
+}
+
 
 void config_start_ADC(void){
   // 8 bit res
