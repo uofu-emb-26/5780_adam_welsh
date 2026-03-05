@@ -61,10 +61,18 @@ int main(void)
   uint8_t thresh3 = 190;
   uint8_t thresh4 = 230;
 
-  
+  int i = 0;
 
   while (1)
   {
+
+    if (i == 32)
+      i = 0;
+
+    DAC1->DHR8R1 = sine_table[i];
+    i++;
+    HAL_Delay(1);
+    
 
     // read_val = ADC1->DR;
 
