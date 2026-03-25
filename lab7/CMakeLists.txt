@@ -20,6 +20,7 @@ target_compile_definitions(lab7 PRIVATE
 # Add linked libraries
 target_link_libraries(lab7
     STM32_Drivers
+    SEGGER_RTT
 )
 
 flash_target(lab7)
