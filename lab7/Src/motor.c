@@ -18,6 +18,13 @@ static uint8_t buf0[1024];
 static uint8_t buf1[1024];
 static uint8_t buf2[1024];
 
+union byte_split
+{
+    uint32_t uword;
+    int32_t word;
+    uint8_t bytes[4];
+};
+
 void log_init(void)
 {
     SEGGER_RTT_ConfigUpBuffer(0, "", buf0, 1024, SEGGER_RTT_MODE_NO_BLOCK_SKIP);
@@ -132,12 +139,7 @@ void encoder_init(void)
     NVIC_EnableIRQ(TIM6_DAC_IRQn); // Enable interrupt in NVIC
     NVIC_SetPriority(TIM6_DAC_IRQn, 2);
 }
-union byte_split
-{
-    uint32_t uword;
-    int32_t word;
-    uint8_t bytes[4];
-};
+
 
 // Encoder interrupt to calculate motor speed, also manages PI controller
 void TIM6_DAC_IRQHandler(void)
@@ -214,10 +216,9 @@ void PI_update(void)
     // rpm = rotations per minute 
     //  
     // rpm -> (enc/45 ms) -> (rotations / minute) * (64 enc/ rot) * (1 minute / 60000 ms) = enc /ms 
-    target_rpm = rpm * 64/60000
-    motor_speed = motor_speed * 45;
+    
 
-    error = target_rpm - motor_speed ;
+    error = .045*target_rpm*3200/60 - motor_speed ;
 
 
    
@@ -270,6 +271,7 @@ void PI_update(void)
     {
         output = 0;
     }
+    //output = 80;
     pwm_setDutyCycle(output);
     duty_cycle = output; // For debug viewing
 

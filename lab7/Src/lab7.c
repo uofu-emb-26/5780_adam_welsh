@@ -11,6 +11,8 @@
  */
 volatile uint32_t debouncer;
 
+void Lab7_Systick_Callback(void);
+
 /* -------------------------------------------------------------------------------------------------------------
  *  Miscellaneous Core Functions
  *  -------------------------------------------------------------------------------------------------------------
@@ -32,8 +34,8 @@ void  button_init(void) {
     // Initialize PA0 for button input
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN;                                          // Enable peripheral clock to GPIOA
     GPIOA->MODER &= ~(GPIO_MODER_MODER0_0 | GPIO_MODER_MODER0_1);               // Set PA0 to input
-    GPIOC->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEEDR0_0 | GPIO_OSPEEDR_OSPEEDR0_1);     // Set to low speed
-    GPIOC->PUPDR |= GPIO_PUPDR_PUPDR0_1;                                        // Set to pull-down
+    GPIOA->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEEDR0_0 | GPIO_OSPEEDR_OSPEEDR0_1);     // Set to low speed
+    GPIOA->PUPDR |= GPIO_PUPDR_PUPDR0_1;                                        // Set to pull-down
 }
 
 /* Called by SysTick Interrupt
@@ -52,6 +54,7 @@ void Lab7_Systick_Callback(void) {
     if(debouncer == 0x7FFFFFFF) {
         // Begin critical section
         __disable_irq();
+        GPIOC->ODR ^= GPIO_ODR_8;
         switch(target_rpm) {
             case 80:
                 target_rpm = 50;
@@ -85,8 +88,11 @@ int main(void) {
     debouncer = 0;                          // Initialize global variables
     HAL_Init();                             // Initialize HAL internals
     LED_init();                             // Initialize LED's
-    button_init();                          // Initialize button
-    motor_init();                           // Initialize motor code
+    button_init();    
+    log_init();                      // Initialize button
+    motor_init();                           // Initialize motor code'
+
+    //GPIOC->ODR = GPIO_ODR_8;
 
     while (1) {
         GPIOC->ODR ^= GPIO_ODR_9;           // Toggle green LED (heartbeat)
