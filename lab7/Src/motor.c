@@ -11,8 +11,8 @@ volatile int16_t target_rpm = 0;     // Desired speed target
 volatile int16_t motor_speed = 0;    // Measured motor speed
 volatile int8_t adc_value = 0;       // ADC measured motor current
 volatile int16_t error = 0;          // Speed error signal
-volatile uint8_t Kp = 1;             // Proportional gain
-volatile uint8_t Ki = 1;             // Integral gain
+volatile uint8_t Kp = 25;             // Proportional gain
+volatile uint8_t Ki =2;             // Integral gain
 
 static uint8_t buf0[1024];
 static uint8_t buf1[1024];
@@ -224,7 +224,7 @@ void PI_update(void)
    
     /// TODO: Calculate integral portion of PI controller, write to "error_integral" variable
     
-    error_integral = error_integral + error;
+    error_integral = error_integral + error*.045 ;
 
     /// TODO: Clamp the value of the integral to a limited positive range
 
@@ -242,7 +242,7 @@ void PI_update(void)
 
 
     int16_t error_proportional = Kp * error;
-    int16_t output = error_proportional + Ki * error_integral; // Change this!
+    int16_t output = error_proportional - Ki * error_integral; // Change this!
     /* Because the calculated values for the PI controller are significantly larger than
      * the allowable range for duty cycle, you'll need to divide the result down into
      * an appropriate range. (Maximum integral clamp / X = 100% duty cycle)
@@ -271,7 +271,7 @@ void PI_update(void)
     {
         output = 0;
     }
-    //output = 80;
+    // output = 80;
     pwm_setDutyCycle(output);
     duty_cycle = output; // For debug viewing
 

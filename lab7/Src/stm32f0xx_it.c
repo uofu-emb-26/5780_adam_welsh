@@ -2,13 +2,13 @@
 #include "stm32f0xx_hal.h"
 #include "stm32f0xx_it.h"
 
-extern void Lab7_Systick_Callback(void);  // <-- add this
+extern void Lab7_Systick_Callback(void);  
 
 
 /******************************************************************************/
 /*           Cortex-M0 Processor Interruption and Exception Handlers          */
 /******************************************************************************/
-/**
+/** 
   * @brief This function handles Non maskable interrupt.
   */
 void NMI_Handler(void)
